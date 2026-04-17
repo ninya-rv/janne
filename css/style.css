@@ -87,7 +87,7 @@ body {
     flex: 1;
     padding: 30px;
     position: relative;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .main::before {

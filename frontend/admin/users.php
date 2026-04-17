@@ -52,7 +52,7 @@ include "../../backend/db.php";
                 </a>
             </li>
             <li>
-                <a href="attendance.html" class="active">
+                <a href="attendance.php" class="active">
                     <i class="fa-solid fa-calendar-check"></i>
                     <span>Attendance</span>
                 </a>

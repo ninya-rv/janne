@@ -30,7 +30,7 @@ include "../../backend/db.php";
     <div class="sidebar">
         <ul>
             <li><a href="../../frontend/admin/dashboard.php" class="active"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a></li>
-            <li><a href="attendance.html"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+            <li><a href="attendance.php"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
             <li><a href="users.php"><i class="fa-solid fa-users"></i><span>Users</span></a></li>
             <li><a href="instructor_assignment.php"><i class="fa-solid fa-user-shield"></i><span>Instructor Assignment</span></a></li>
         </ul>

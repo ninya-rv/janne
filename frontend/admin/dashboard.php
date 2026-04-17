@@ -1,9 +1,56 @@
 <?php
 session_start();
+include "../../backend/db.php";
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: /frontend/sign_in.html");
     exit;
+}
+
+// TOTAL STUDENTS
+$totalStudentsQuery = "SELECT COUNT(*) as total FROM students";
+$totalStudents = mysqli_fetch_assoc(mysqli_query($conn, $totalStudentsQuery))['total'];
+
+// TOTAL TEACHERS
+$totalTeachersQuery = "SELECT COUNT(*) as total FROM users WHERE role='instructor'";
+$totalTeachers = mysqli_fetch_assoc(mysqli_query($conn, $totalTeachersQuery))['total'];
+
+$activeQuery = "SELECT COUNT(*) as total FROM students WHERE status='Active'";
+$activeStudents = mysqli_fetch_assoc(mysqli_query($conn, $activeQuery))['total'];
+
+$inactiveQuery = "SELECT COUNT(*) as total FROM students WHERE status='Inactive'";
+$inactiveStudents = mysqli_fetch_assoc(mysqli_query($conn, $inactiveQuery))['total'];
+
+$combinedQuery = "
+    SELECT 
+        student_id AS id,
+        name,
+        email,
+        year,
+        status,
+        'Student' AS type
+    FROM students
+
+    UNION ALL
+
+    SELECT 
+        '' AS id,
+        name,
+        email,
+        '' AS year,
+        'Active' AS status,
+        'Instructor' AS type
+    FROM users
+    WHERE role='instructor'
+
+    ORDER BY name ASC
+";
+
+$result = mysqli_query($conn, $combinedQuery);
+
+$combinedList = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $combinedList[] = $row;
 }
 ?>
 <!DOCTYPE html>
@@ -59,7 +106,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                 </a>
             </li>
             <li>
-                <a href="attendance.html" class="active">
+                <a href="attendance.php" class="active">
                     <i class="fa-solid fa-calendar-check"></i>
                     <span>Attendance</span>
                 </a>
@@ -89,19 +136,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         <div class="cards">
             <div class="card">
                 <h4>Total Students</h4>
-                <p>100</p>
+                <p><?php echo $totalStudents; ?></p>
             </div>
             <div class="card">
                 <h4>Total Teachers</h4>
-                <p>15</p>
+                <p><?php echo $totalTeachers; ?></p>
             </div>
             <div class="card">
                 <h4>Active Students</h4>
-                <p>39</p>
+                <p><?php echo $activeStudents; ?></p>
             </div>
             <div class="card">
                 <h4>Inactive Students</h4>
-                <p>61</p>
+                <p><?php echo $inactiveStudents; ?></p>
             </div>
         </div>
 
@@ -110,7 +157,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             <h4>Student List</h4>
             <br>
             <div class="search-filter">
-                <input type="text" placeholder="Search students...">
+                <input type="text" id="searchInput" placeholder="Search students...">
 
                 <button class="filter-btn" id="filterToggle">
                     <i class="fa-solid fa-filter"></i>
@@ -121,24 +168,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             <div class="filter-panel" id="filterPanel">
                 <div class="filter-grid">
 
-                    <!-- Course Filter -->
-                    <div class="filter-group">
-                        <label>Course</label>
-                        <select id="filterCourse">
-                            <option value="">All</option>
-                            <option value="BSIT">BSIT</option>
-                            <!-- Only courses present in table -->
-                        </select>
-                    </div>
-
                     <!-- Year Level Filter -->
                     <div class="filter-group">
                         <label>Year Level</label>
                         <select id="filterYear">
                             <option value="">All</option>
-                            <option value="2nd Year">2nd Year</option>
-                            <option value="3rd Year">3rd Year</option>
-                            <!-- Only years present in table -->
+                            <option value="1nd Year">1st Year</option>
+                            <option value="2rd Year">2nd Year</option>
+                            <option value="3nd Year">3rd Year</option>
+                            <option value="4rd Year">4th Year</option>
                         </select>
                     </div>
 
@@ -152,10 +190,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
                         </select>
                     </div>
 
-                    <!-- Optional: Date Filter -->
                     <div class="filter-group">
-                        <label>Date</label>
-                        <input type="date" id="filterDate">
+                        <label>Type</label>
+                        <select id="filterType">
+                            <option value="">All</option>
+                            <option value="Student">Student</option>
+                            <option value="Instructor">Instructor</option>
+                        </select>
                     </div>
 
                 </div>
@@ -164,31 +205,31 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             <table class="student-table">
                 <thead>
                     <tr>
-                        <th>Student ID</th>
+                        <th>STUDENT ID</th>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Course</th>
                         <th>Year</th>
                         <th>Status</th>
+                        <th>Type</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="userTable">
+                <?php if (!empty($combinedList)): ?>
+                    <?php foreach ($combinedList as $row): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['id']); ?></td>
+                            <td><?php echo htmlspecialchars($row['name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['email']); ?></td>
+                            <td><?php echo htmlspecialchars($row['year']); ?></td>
+                            <td><?php echo htmlspecialchars($row['status']); ?></td>
+                            <td><?php echo htmlspecialchars($row['type']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
                     <tr>
-                        <td>2020-001</td>
-                        <td>Juan Dela Cruz</td>
-                        <td>juan.delacruz@evsu.edu.ph</td>
-                        <td>BSIT</td>
-                        <td>2nd Year</td>
-                        <td>Active</td>
+                        <td colspan="7" style="text-align:center;">No records found.</td>
                     </tr>
-                    <tr>
-                        <td>2020-002</td>
-                        <td>Maria Santos</td>
-                        <td>maria.santos@evsu.edu.ph</td>
-                        <td>BSIT</td>
-                        <td>3rd Year</td>
-                        <td>Inactive</td>
-                    </tr>
+                <?php endif; ?>
                 </tbody>
             </table>
         </section>
@@ -198,19 +239,77 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 </body>
     <script src="/backend/script.js"></script>
     <script>
-        const profileBtn = document.getElementById("profileBtn");
-        const dropdown = document.getElementById("profileDropdown");
+    const searchInput = document.getElementById("searchInput");
+    const filterYear = document.getElementById("filterYear");
+    const filterStatus = document.getElementById("filterStatus");
+    const filterType = document.getElementById("filterType");
+    const resetBtn = document.getElementById("resetFilter");
+    const filterToggle = document.getElementById("filterToggle");
+    const filterPanel = document.getElementById("filterPanel");
 
-        profileBtn.addEventListener("click", () => {
-            dropdown.style.display =
-                dropdown.style.display === "block" ? "none" : "block";
-        });
+    // MAIN FILTER FUNCTION
+    function filterTable() {
+        const searchValue = searchInput.value.toLowerCase();
+        const yearValue = filterYear.value.toLowerCase();
+        const statusValue = filterStatus.value.toLowerCase();
+        const typeValue = filterType.value.toLowerCase();
 
-        // close when clicking outside
-        document.addEventListener("click", function(e){
-            if(!profileBtn.contains(e.target) && !dropdown.contains(e.target)){
-                dropdown.style.display = "none";
+        const rows = document.querySelectorAll("#userTable tr");
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+
+            const id = cells[0].textContent.toLowerCase();
+            const name = cells[1].textContent.toLowerCase();
+            const email = cells[2].textContent.toLowerCase();
+            const year = cells[3].textContent.toLowerCase();
+            const status = cells[4].textContent.toLowerCase();
+            const type = cells[5].textContent.toLowerCase();
+
+            // SEARCH
+            const matchesSearch =
+                id.includes(searchValue) ||
+                name.includes(searchValue) ||
+                email.includes(searchValue);
+
+            // FILTERS
+            const matchesYear = yearValue === "" || year === yearValue;
+            const matchesStatus = statusValue === "" || status === statusValue;
+            const matchesType = typeValue === "" || type === typeValue;
+
+            // FINAL CHECK
+            if (matchesSearch && matchesYear && matchesStatus && matchesType) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
             }
         });
+    }
+
+    // EVENTS
+    searchInput.addEventListener("keyup", filterTable);
+    filterYear.addEventListener("change", filterTable);
+    filterStatus.addEventListener("change", filterTable);
+    filterType.addEventListener("change", filterTable);
+
+    // RESET / REFRESH BUTTON
+    resetBtn.addEventListener("click", () => {
+        searchInput.value = "";
+        filterYear.value = "";
+        filterStatus.value = "";
+        filterType.value = "";
+
+        const rows = document.querySelectorAll("#userTable tr");
+        rows.forEach(row => row.style.display = "");
+
+        // optional: close filter panel
+        filterPanel.style.display = "none";
+    });
+
+    // TOGGLE FILTER PANEL
+    filterToggle.addEventListener("click", () => {
+        filterPanel.style.display =
+            filterPanel.style.display === "block" ? "none" : "block";
+    });
     </script>
 </html>
