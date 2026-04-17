@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Student Registration - Face Capture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Face-api.js -->
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script defer src="/api/faceid.js"></script>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    padding: 20px;
+  }
+
+  /* MAIN CONTAINER */
+  .container {
+    max-width: 1000px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 20px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  /* LEFT SIDE IMAGE */
+  .left {
+    flex: 1;
+    background: #620010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .left img.profile-icon {
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+  }
+
+  /* RIGHT FORM */
+  .right {
+    flex: 1;
+    display: flex;
+    padding: 5px;
+    flex-direction: column;
+    align-items: center; /* centers everything inside form */
+  }
+
+  h2 {
+    color: #8B0000;
+    margin-bottom: 10px;
+    font-size: 28px;
+    text-align: center;
+  }
+
+  form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centers inputs and button */
+  }
+
+  label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #8B0000;
+    width: 85%;
+  }
+
+  input, select {
+    width: 80%;
+    padding: 12px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    display: block;
+  }
+
+  button {
+    width: 30%;
+    margin: 20px auto 0 auto;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #8B0000;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+  }
+
+  button:hover {
+    background: #a30000;
+  }
+
+  video {
+    width: 85%;
+    margin-top: 15px;
+    border: 2px solid #8B0000;
+    border-radius: 10px;
+    display: none;
+  }
+
+  .terms {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    font-size: 14px;
+    width: 85%;
+  }
+
+  .terms input {
+    width: auto;
+    margin-top: 3px;
+  }
+
+  #status {
+    color: green;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  #warning {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  a {
+    color: #8B0000;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- LEFT SIDE IMAGE -->
+  <div class="left">
+    <img src="/css/face-recognition.png" alt="Profile Icon" class="profile-icon" />
+  </div>
+
+  <!-- RIGHT SIDE FORM -->
+  <div class="right">
+    <h2>REGISTER</h2>
+
+    <form id="registrationForm">
+
+      <label>Student ID</label>
+      <input type="text" id="student_id" required />
+
+      <label>Name</label>
+      <input type="text" id="name" required />
+      <label>Email</label>
+      <input type="email" id="email" required />
+
+      <label>Year</label>
+      <select id="year" required>
+        <option value="">Select Year</option>
+        <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+        <option value="3rd Year">3rd Year</option>
+        <option value="4th Year">4th Year</option>
+      </select>
+
+      <label>Section</label>
+      <select id="section" required>
+        <option value="">Select Section</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+      </select>
+
+      <video id="video" autoplay muted></video>
+
+      <div class="terms">
+        <input type="checkbox" id="agree_terms" />
+        <span>
+          I agree to the
+          <a href="#" onclick="showTerms()">Terms & Conditions</a>
+          for facial data collection and privacy protection.
+        </span>
+      </div>
+
+      <button type="button" onclick="registerFace()">Register</button>
+
+      <div id="warning"></div>
+      <div id="status"></div>
+
+    </form>
+  </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div id="termsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6);">
+  <div style="background: white; width: 500px; max-width: 90%; margin: 100px auto; padding: 20px; border-radius: 10px;">
+    <h3 style="color: #8B0000">Terms and Conditions – Facial Data Registration</h3>
+    <p>By registering your face in this system, you agree to the following:</p>
+    <ul>
+      <li>Your facial data will only be used for attendance verification.</li>
+      <li>The system stores only a facial descriptor, not an actual image.</li>
+      <li>Your biometric data will not be shared with third parties.</li>
+      <li>This system is strictly for academic attendance monitoring.</li>
+      <li>You may request removal of your data from the system.</li>
+    </ul>
+    <p>By continuing, you consent to the collection and use of your facial data.</p>
+    <button onclick="closeTerms()" style="margin-top: 10px">Close</button>
+  </div>
+</div>
+
+<script>
+  function showTerms() {
+    document.getElementById("termsModal").style.display = "block";
+  }
+  function closeTerms() {
+    document.getElementById("termsModal").style.display = "none";
+  }
+</script>
+
+</body>
+</html>

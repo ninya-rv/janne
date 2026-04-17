@@ -1,0 +1,78 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch master
+#
+# Initial commit
+#
+# Changes to be committed:
+#	new file:   .hintrc
+#	new file:   .vscode/launch.json
+#	new file:   api/faceid.js
+#	new file:   api/instructorScanner.js
+#	new file:   backend/add_user.php
+#	new file:   backend/assign_instructor.php
+#	new file:   backend/db.php
+#	new file:   backend/delete_instructor.php
+#	new file:   backend/edit_instructor.php
+#	new file:   backend/get_student.php
+#	new file:   backend/login.php
+#	new file:   backend/register_user.php
+#	new file:   backend/save_attendance.php
+#	new file:   backend/script.js
+#	new file:   backend/update_status.php
+#	new file:   backend/upload_face.php
+#	new file:   css/EVSU_Official_Logo.png
+#	new file:   css/evsu_background.png
+#	new file:   css/face-recognition.png
+#	new file:   css/style.css
+#	new file:   frontend/admin/attendance.html
+#	new file:   frontend/admin/dashboard.php
+#	new file:   frontend/admin/instructor_assignment.php
+#	new file:   frontend/admin/users.php
+#	new file:   frontend/forgot.html
+#	new file:   frontend/instructor/attendance.php
+#	new file:   frontend/instructor/dashboard.php
+#	new file:   frontend/instructor/models/age_gender_model-shard1
+#	new file:   frontend/instructor/models/age_gender_model-weights_manifest.json
+#	new file:   frontend/instructor/models/face_expression_model-shard1
+#	new file:   frontend/instructor/models/face_expression_model-weights_manifest.json
+#	new file:   frontend/instructor/models/face_landmark_68_model-shard1
+#	new file:   frontend/instructor/models/face_landmark_68_model-weights_manifest.json
+#	new file:   frontend/instructor/models/face_landmark_68_tiny_model-shard1
+#	new file:   frontend/instructor/models/face_landmark_68_tiny_model-weights_manifest.json
+#	new file:   frontend/instructor/models/face_recognition_model-shard1
+#	new file:   frontend/instructor/models/face_recognition_model-shard2
+#	new file:   frontend/instructor/models/face_recognition_model-weights_manifest.json
+#	new file:   frontend/instructor/models/mtcnn_model-shard1
+#	new file:   frontend/instructor/models/mtcnn_model-weights_manifest.json
+#	new file:   frontend/instructor/models/ssd_mobilenetv1_model-shard1
+#	new file:   frontend/instructor/models/ssd_mobilenetv1_model-shard2
+#	new file:   frontend/instructor/models/ssd_mobilenetv1_model-weights_manifest.json
+#	new file:   frontend/instructor/models/tiny_face_detector_model-shard1
+#	new file:   frontend/instructor/models/tiny_face_detector_model-weights_manifest.json
+#	new file:   frontend/instructor/scanner.php
+#	new file:   frontend/resetPass.html
+#	new file:   frontend/sign_in.html
+#	new file:   frontend/sign_up.html
+#	new file:   frontend/student/FaceScan.html
+#	new file:   frontend/student/models/age_gender_model-shard1
+#	new file:   frontend/student/models/age_gender_model-weights_manifest.json
+#	new file:   frontend/student/models/face_expression_model-shard1
+#	new file:   frontend/student/models/face_expression_model-weights_manifest.json
+#	new file:   frontend/student/models/face_landmark_68_model-shard1
+#	new file:   frontend/student/models/face_landmark_68_model-weights_manifest.json
+#	new file:   frontend/student/models/face_landmark_68_tiny_model-shard1
+#	new file:   frontend/student/models/face_landmark_68_tiny_model-weights_manifest.json
+#	new file:   frontend/student/models/face_recognition_model-shard1
+#	new file:   frontend/student/models/face_recognition_model-shard2
+#	new file:   frontend/student/models/face_recognition_model-weights_manifest.json
+#	new file:   frontend/student/models/mtcnn_model-shard1
+#	new file:   frontend/student/models/mtcnn_model-weights_manifest.json
+#	new file:   frontend/student/models/ssd_mobilenetv1_model-shard1
+#	new file:   frontend/student/models/ssd_mobilenetv1_model-shard2
+#	new file:   frontend/student/models/ssd_mobilenetv1_model-weights_manifest.json
+#	new file:   frontend/student/models/tiny_face_detector_model-shard1
+#	new file:   frontend/student/models/tiny_face_detector_model-weights_manifest.json
+#
