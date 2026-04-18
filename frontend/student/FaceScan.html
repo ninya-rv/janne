@@ -12,14 +12,35 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    padding: 20px;
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background: #ffffff;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("/css/image.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(9px);
+    opacity: 0.65;
+    z-index: -1;
+    transform: scale(1.02);
   }
 
   /* MAIN CONTAINER */
   .container {
-    max-width: 1000px;
-    margin: 30px auto;
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    width: 900px;
+    height: 600px;
+    margin: 70px auto;
     background: white;
     border-radius: 20px;
     display: flex;
@@ -34,6 +55,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
   }
 
   .left img.profile-icon {
@@ -46,53 +68,58 @@
   .right {
     flex: 1;
     display: flex;
-    padding: 5px;
+    padding: 15px 10px;
     flex-direction: column;
-    align-items: center; /* centers everything inside form */
+    align-items: center;
+    overflow: hidden;
+    height: 100%;
   }
 
   h2 {
     color: #8B0000;
-    margin-bottom: 10px;
-    font-size: 28px;
+    margin: 10px 0 8px 0;
+    font-size: 24px;
     text-align: center;
   }
 
   form {
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center; /* centers inputs and button */
+    align-items: center;
+    overflow: hidden;
   }
 
   label {
     display: block;
-    margin-top: 15px;
+    margin-top: 10px;
     font-weight: bold;
     color: #8B0000;
     width: 85%;
+    font-size: 14px;
   }
 
   input, select {
     width: 80%;
-    padding: 12px;
-    margin-top: 6px;
-    border-radius: 10px;
+    padding: 10px;
+    margin-top: 4px;
+    border-radius: 8px;
     border: 1px solid #ccc;
-    font-size: 15px;
+    font-size: 14px;
     display: block;
   }
 
   button {
-    width: 30%;
-    margin: 20px auto 0 auto;
-    padding: 12px;
+    width: 20%;
+    margin: 8px auto 0 auto;
+    padding: 6px;
     border: none;
-    border-radius: 12px;
+    border-radius: 8px;
     background: #8B0000;
     color: white;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     display: block;
   }
@@ -102,44 +129,142 @@
   }
 
   video {
-    width: 85%;
-    margin-top: 15px;
+    width: 340px;
+    height: 255px;
+    margin-top: 20px;
     border: 2px solid #8B0000;
     border-radius: 10px;
     display: none;
+    object-fit: cover;
   }
 
   .terms {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
-    font-size: 14px;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 13px;
     width: 85%;
   }
 
   .terms input {
     width: auto;
-    margin-top: 3px;
+    margin-top: 2px;
+    padding: 4px;
   }
 
   #status {
     color: green;
     font-weight: bold;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 5px;
+    font-size: 11px;
+    min-height: 16px;
   }
 
   #warning {
     color: red;
     font-weight: bold;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 5px;
+    font-size: 11px;
+    min-height: 16px;
   }
 
   a {
     color: #8B0000;
     text-decoration: underline;
     cursor: pointer;
+  }
+
+  /* STEP INDICATOR */
+  .step-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-number {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #ccc;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 13px;
+    transition: background 0.3s ease;
+  }
+
+  .step.active .step-number {
+    background: #8B0000;
+  }
+
+  .step-label {
+    font-weight: bold;
+    color: #666;
+    font-size: 11px;
+  }
+
+  .step.active .step-label {
+    color: #8B0000;
+  }
+
+  /* STEP CONTENT */
+  .step-content {
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .step-content.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .form-section {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: center;
+  }
+
+  .button-group button {
+    width: auto;
+    padding: 12px 30px;
+    margin: 0;
+  }
+
+  button.secondary {
+    background: #ccc;
+    color: #333;
+  }
+
+  button.secondary:hover {
+    background: #999;
   }
 </style>
 </head>
@@ -156,49 +281,82 @@
   <div class="right">
     <h2>REGISTER</h2>
 
+    <!-- STEP INDICATOR -->
+    <div class="step-indicator">
+      <div class="step active" id="step1-indicator">
+        <div class="step-number">1</div>
+        <div class="step-label">Information</div>
+      </div>
+      <div class="step" id="step2-indicator">
+        <div class="step-number">2</div>
+        <div class="step-label">Face Scan</div>
+      </div>
+    </div>
+
     <form id="registrationForm">
 
-      <label>Student ID</label>
-      <input type="text" id="student_id" required />
+      <!-- STEP 1: INFORMATION INPUT -->
+      <div class="step-content active" id="step1-content">
+        <div class="form-section">
+          <label>Student ID</label>
+          <input type="text" id="student_id" required />
 
-      <label>Name</label>
-      <input type="text" id="name" required />
-      <label>Email</label>
-      <input type="email" id="email" required />
+          <label>Name</label>
+          <input type="text" id="name" required />
+          
+          <label>Email</label>
+          <input type="email" id="email" required />
 
-      <label>Year</label>
-      <select id="year" required>
-        <option value="">Select Year</option>
-        <option value="1st Year">1st Year</option>
-        <option value="2nd Year">2nd Year</option>
-        <option value="3rd Year">3rd Year</option>
-        <option value="4th Year">4th Year</option>
-      </select>
+          <label>Year</label>
+          <select id="year" required>
+            <option value="">Select Year</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+          </select>
 
-      <label>Section</label>
-      <select id="section" required>
-        <option value="">Select Section</option>
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-      </select>
+          <label>Section</label>
+          <select id="section" required>
+            <option value="">Select Section</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
 
-      <video id="video" autoplay muted></video>
+          <div class="terms">
+            <input type="checkbox" id="agree_terms" />
+            <span>
+              I agree to the
+              <a href="#" onclick="showTerms()">Terms & Conditions</a>
+              for facial data collection and privacy protection.
+            </span>
+          </div>
 
-      <div class="terms">
-        <input type="checkbox" id="agree_terms" />
-        <span>
-          I agree to the
-          <a href="#" onclick="showTerms()">Terms & Conditions</a>
-          for facial data collection and privacy protection.
-        </span>
+          <div class="button-group">
+            <button type="button" onclick="nextStep()" class="primary">Next</button>
+          </div>
+
+          <div id="warning"></div>
+        </div>
       </div>
 
-      <button type="button" onclick="registerFace()">Register</button>
+      <!-- STEP 2: FACE SCAN AND REGISTRATION -->
+      <div class="step-content" id="step2-content">
+        <div class="form-section">
+          <p style="color: #666; margin-bottom: 20px; text-align: center;">Position your face in the video and click Register</p>
+          
+          <video id="video" autoplay muted></video>
 
-      <div id="warning"></div>
-      <div id="status"></div>
+          <div class="button-group">
+            <button type="button" onclick="previousStep()" class="secondary">Back</button>
+            <button type="button" onclick="registerFace()" class="primary">Register</button>
+          </div>
+
+          <div id="status"></div>
+        </div>
+      </div>
 
     </form>
   </div>
@@ -220,15 +378,6 @@
     <button onclick="closeTerms()" style="margin-top: 10px">Close</button>
   </div>
 </div>
-
-<script>
-  function showTerms() {
-    document.getElementById("termsModal").style.display = "block";
-  }
-  function closeTerms() {
-    document.getElementById("termsModal").style.display = "none";
-  }
-</script>
 
 </body>
 </html>
