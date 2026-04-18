@@ -2,22 +2,17 @@
 session_start();
 include "../../backend/db.php";
 
-// Redirect if not logged in
 if(!isset($_SESSION['user_id'])){
     header("Location: ../sign_in.html");
     exit;
 }
-
-// Redirect if not instructor
 if($_SESSION['role'] !== 'instructor'){
     header("Location: ../sign_in.html");
     exit;
 }
 
-// Current instructor ID
 $instructor_id = $_SESSION['user_id'];
 
-// Get logged-in instructor details
 $instructorQuery = "SELECT name, email FROM users WHERE id = '$instructor_id' AND role = 'instructor' LIMIT 1";
 $instructorResult = mysqli_query($conn, $instructorQuery);
 
@@ -26,7 +21,6 @@ if ($instructorResult && mysqli_num_rows($instructorResult) > 0) {
     $instructorName = $instructorData['name'];
     $instructorEmail = $instructorData['email'];
 
-    // Create initials
     $nameParts = explode(" ", trim($instructorName));
     $initials = "";
     foreach ($nameParts as $part) {
@@ -43,7 +37,6 @@ $totalStudents = 0;
 $activeStudents = 0;
 $inactiveStudents = 0;
 
-// Get all unique year + section assigned to this instructor
 $assignmentQuery = "SELECT DISTINCT year_level, section 
                     FROM instructor_assignment 
                     WHERE instructor_name = '".mysqli_real_escape_string($conn, $instructorName)."'";
@@ -57,13 +50,10 @@ if ($assignmentResult && mysqli_num_rows($assignmentResult) > 0) {
         $year = mysqli_real_escape_string($conn, $assignment['year_level']);
         $section = mysqli_real_escape_string($conn, $assignment['section']);
 
-        // Example:
-        // (year = '2nd Year' AND section = 'C')
         $conditions[] = "(year = '$year' AND section = '$section')";
     }
 }
 
-// Get only students that match assigned year + section
 if (!empty($conditions)) {
     $studentQuery = "SELECT * FROM students 
                      WHERE " . implode(" OR ", $conditions) . "
@@ -75,8 +65,6 @@ if (!empty($conditions)) {
         while ($student = mysqli_fetch_assoc($studentResult)) {
             $assignedStudents[] = $student;
             $totalStudents++;
-
-            // If students table has status column
             if (isset($student['status'])) {
                 if (strtolower($student['status']) === 'active') {
                     $activeStudents++;
@@ -84,7 +72,6 @@ if (!empty($conditions)) {
                     $inactiveStudents++;
                 }
             } else {
-                // If no status column yet, count all as active
                 $activeStudents++;
             }
         }
@@ -130,8 +117,6 @@ if (!empty($conditions)) {
 </header>
 
 <div class="container">
-
-    <!-- Sidebar -->
     <aside class="sidebar">
         <ul>
              <li>
@@ -155,12 +140,8 @@ if (!empty($conditions)) {
             </li>
         </ul>
     </aside>
-
-    <!-- Main Content -->
     <main class="main">
         <h3>Dashboard</h3>
-
-        <!-- Cards -->
         <div class="cards">
             <div class="card">
                 <h4>Total Students</h4>
@@ -175,7 +156,6 @@ if (!empty($conditions)) {
                 <p><?php echo $inactiveStudents; ?></p>
             </div>
         </div>
-        <!-- Student Section -->
         <section class="student-section">
             <h4>Student List</h4>
             <br>
@@ -186,33 +166,16 @@ if (!empty($conditions)) {
                     <i class="fa-solid fa-filter"></i>
                 </button>
             </div>
-
-            <!-- FILTER PANEL (Placed BELOW search-filter) -->
             <div class="filter-panel" id="filterPanel">
                 <div class="filter-grid">
-
-                    <!-- Course Filter -->
-                    <div class="filter-group">
-                        <label>Course</label>
-                        <select id="filterCourse">
-                            <option value="">All</option>
-                            <option value="BSIT">BSIT</option>
-                            <!-- Only courses present in table -->
-                        </select>
-                    </div>
-
-                    <!-- Year Level Filter -->
                     <div class="filter-group">
                         <label>Year Level</label>
                         <select id="filterYear">
                             <option value="">All</option>
                             <option value="2nd Year">2nd Year</option>
                             <option value="3rd Year">3rd Year</option>
-                            <!-- Only years present in table -->
                         </select>
                     </div>
-
-                    <!-- Status Filter -->
                     <div class="filter-group">
                         <label>Status</label>
                         <select id="filterStatus">
@@ -221,8 +184,6 @@ if (!empty($conditions)) {
                             <option value="Inactive">Inactive</option>
                         </select>
                     </div>
-
-                    <!-- Optional: Date Filter -->
                     <div class="filter-group">
                         <label>Date</label>
                         <input type="date" id="filterDate">
@@ -276,7 +237,6 @@ if (!empty($conditions)) {
                 dropdown.style.display === "block" ? "none" : "block";
         });
 
-        // close when clicking outside
         document.addEventListener("click", function(e){
             if(!profileBtn.contains(e.target) && !dropdown.contains(e.target)){
                 dropdown.style.display = "none";

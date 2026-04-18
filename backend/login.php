@@ -2,7 +2,6 @@
 session_start();
 include "db.php";
 
-/* Get JSON input */
 $data = json_decode(file_get_contents("php://input"), true);
 
 if(!isset($data['email']) || !isset($data['password'])){
@@ -16,15 +15,12 @@ if(!isset($data['email']) || !isset($data['password'])){
 $email = mysqli_real_escape_string($conn, $data['email']);
 $password = $data['password'];
 
-/* Find user */
 $sql = "SELECT * FROM users WHERE email='$email' LIMIT 1";
 $result = mysqli_query($conn, $sql);
 
 if(mysqli_num_rows($result) === 1){
 
     $user = mysqli_fetch_assoc($result);
-
-    /* Check password */
     if($user['password'] === $password){
 
         /* Check account status */
@@ -36,13 +32,11 @@ if(mysqli_num_rows($result) === 1){
             exit;
         }
 
-        /* Create session */
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['name'] = $user['name'];
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role'];
 
-        /* Send success response */
         echo json_encode([
             "success" => true,
             "role" => $user['role']

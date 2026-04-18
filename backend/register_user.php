@@ -17,10 +17,8 @@ $name = mysqli_real_escape_string($conn, $data['name']);
 $email = mysqli_real_escape_string($conn, $data['email']);
 $password = mysqli_real_escape_string($conn, $data['password']);
 
-/* Default role if not provided */
 $role = isset($data['role']) ? mysqli_real_escape_string($conn, $data['role']) : 'instructor';
 
-/* SECURITY: Prevent anyone from creating admin via signup */
 if ($role === 'admin') {
     echo json_encode([
         "success" => false,
@@ -29,7 +27,6 @@ if ($role === 'admin') {
     exit;
 }
 
-/* Check if email already exists */
 $check = "SELECT * FROM users WHERE email='$email'";
 $result = mysqli_query($conn, $check);
 
@@ -41,7 +38,6 @@ if (mysqli_num_rows($result) > 0) {
     exit;
 }
 
-/* Insert new user with inactive status */
 $sql = "INSERT INTO users (name, email, password, role, status)
         VALUES ('$name', '$email', '$password', '$role', 'inactive')";
 

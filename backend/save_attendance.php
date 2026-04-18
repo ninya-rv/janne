@@ -4,12 +4,8 @@ include "db.php";
 
 header('Content-Type: application/json');
 
-// ✅ FIX: Force Philippine Time
 date_default_timezone_set('Asia/Manila');
 
-// =========================
-// AUTH CHECK
-// =========================
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'instructor') {
     echo json_encode([
         "success" => false,
@@ -18,9 +14,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'instructor') {
     exit;
 }
 
-// =========================
-// GET INSTRUCTOR NAME
-// =========================
 $instructor_id = $_SESSION['user_id'];
 
 $instructorQuery = "SELECT name FROM users WHERE id = '$instructor_id' AND role = 'instructor' LIMIT 1";
@@ -37,9 +30,6 @@ if ($instructorResult && mysqli_num_rows($instructorResult) > 0) {
     exit;
 }
 
-// =========================
-// GET JSON DATA
-// =========================
 $data = json_decode(file_get_contents("php://input"), true);
 
 if (!$data) {
@@ -50,9 +40,6 @@ if (!$data) {
     exit;
 }
 
-// =========================
-// INPUTS
-// =========================
 $student_id  = mysqli_real_escape_string($conn, $data['student_id'] ?? '');
 $name        = mysqli_real_escape_string($conn, $data['name'] ?? '');
 $email       = mysqli_real_escape_string($conn, $data['email'] ?? '');
@@ -62,15 +49,11 @@ $section     = mysqli_real_escape_string($conn, $data['section'] ?? '');
 $start_time  = mysqli_real_escape_string($conn, $data['start_time'] ?? '');
 $end_time    = mysqli_real_escape_string($conn, $data['end_time'] ?? '');
 
-// ✅ FIX: clean mode value
 $mode = isset($data['mode']) ? trim($data['mode']) : 'time_in';
 
 $date = date("Y-m-d");
 $currentTime = date("H:i:s");
 
-// =========================
-// VALIDATION
-// =========================
 if (empty($student_id) || empty($name) || empty($subject) || empty($year_level) || empty($section)) {
     echo json_encode([
         "success" => false,
@@ -79,9 +62,6 @@ if (empty($student_id) || empty($name) || empty($subject) || empty($year_level) 
     exit;
 }
 
-// =========================
-// CHECK STUDENT CLASS
-// =========================
 $studentCheck = "SELECT * FROM students 
                  WHERE student_id='$student_id'
                  AND year='$year_level'
@@ -97,9 +77,6 @@ if (!$studentCheckResult || mysqli_num_rows($studentCheckResult) == 0) {
     exit;
 }
 
-// =========================
-// CHECK EXISTING RECORD
-// =========================
 $checkSql = "SELECT * FROM attendance 
              WHERE student_id='$student_id'
              AND date='$date'
@@ -110,16 +87,10 @@ $checkSql = "SELECT * FROM attendance
 
 $checkResult = mysqli_query($conn, $checkSql);
 
-// =========================
-// IF RECORD EXISTS
-// =========================
 if ($checkResult && mysqli_num_rows($checkResult) > 0) {
 
     $existing = mysqli_fetch_assoc($checkResult);
 
-    // =========================
-    // TIME OUT
-    // =========================
     if ($mode === "time_out" || empty($existing['time_out'])) {
 
         if (empty($existing['time_out'])) {
@@ -151,9 +122,6 @@ if ($checkResult && mysqli_num_rows($checkResult) > 0) {
         exit;
     }
 
-    // =========================
-    // BLOCK DOUBLE TIME IN
-    // =========================
     if ($mode === "time_in") {
         echo json_encode([
             "success" => false,
@@ -163,14 +131,10 @@ if ($checkResult && mysqli_num_rows($checkResult) > 0) {
     }
 }
 
-// =========================
-// NEW TIME IN
-// =========================
 if ($mode === "time_in") {
 
     $status = "Present";
 
-    // 30 minutes allowance
     $lateThreshold = strtotime($start_time) + (30 * 60);
 
     if (strtotime($currentTime) > $lateThreshold) {
@@ -198,9 +162,6 @@ if ($mode === "time_in") {
     exit;
 }
 
-// =========================
-// FALLBACK
-// =========================
 echo json_encode([
     "success" => false,
     "message" => "Invalid operation."

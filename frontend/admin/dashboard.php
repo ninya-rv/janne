@@ -7,11 +7,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// TOTAL STUDENTS
 $totalStudentsQuery = "SELECT COUNT(*) as total FROM students";
 $totalStudents = mysqli_fetch_assoc(mysqli_query($conn, $totalStudentsQuery))['total'];
 
-// TOTAL TEACHERS
 $totalTeachersQuery = "SELECT COUNT(*) as total FROM users WHERE role='instructor'";
 $totalTeachers = mysqli_fetch_assoc(mysqli_query($conn, $totalTeachersQuery))['total'];
 
@@ -64,7 +62,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 </head>
 <body>
 
-<!-- Header -->
 <header class="header">
     <div class="logo-title">
         <img src="/css/EVSU_Official_Logo.png" alt="EVSU Logo">
@@ -95,8 +92,6 @@ while ($row = mysqli_fetch_assoc($result)) {
 </header>
 
 <div class="container">
-
-    <!-- Sidebar -->
     <aside class="sidebar">
         <ul>
              <li>
@@ -127,12 +122,8 @@ while ($row = mysqli_fetch_assoc($result)) {
             </li>
         </ul>
     </aside>
-
-    <!-- Main Content -->
     <main class="main">
         <h3>Dashboard</h3>
-
-        <!-- Cards -->
         <div class="cards">
             <div class="card">
                 <h4>Total Students</h4>
@@ -151,8 +142,6 @@ while ($row = mysqli_fetch_assoc($result)) {
                 <p><?php echo $inactiveStudents; ?></p>
             </div>
         </div>
-
-        <!-- Student Section -->
         <section class="student-section">
             <h4>Student List</h4>
             <br>
@@ -164,11 +153,9 @@ while ($row = mysqli_fetch_assoc($result)) {
                 </button>
             </div>
 
-            <!-- FILTER PANEL (Placed BELOW search-filter) -->
             <div class="filter-panel" id="filterPanel">
                 <div class="filter-grid">
 
-                    <!-- Year Level Filter -->
                     <div class="filter-group">
                         <label>Year Level</label>
                         <select id="filterYear">
@@ -180,7 +167,6 @@ while ($row = mysqli_fetch_assoc($result)) {
                         </select>
                     </div>
 
-                    <!-- Status Filter -->
                     <div class="filter-group">
                         <label>Status</label>
                         <select id="filterStatus">
@@ -247,7 +233,6 @@ while ($row = mysqli_fetch_assoc($result)) {
     const filterToggle = document.getElementById("filterToggle");
     const filterPanel = document.getElementById("filterPanel");
 
-    // MAIN FILTER FUNCTION
     function filterTable() {
         const searchValue = searchInput.value.toLowerCase();
         const yearValue = filterYear.value.toLowerCase();
@@ -266,18 +251,15 @@ while ($row = mysqli_fetch_assoc($result)) {
             const status = cells[4].textContent.toLowerCase();
             const type = cells[5].textContent.toLowerCase();
 
-            // SEARCH
             const matchesSearch =
                 id.includes(searchValue) ||
                 name.includes(searchValue) ||
                 email.includes(searchValue);
 
-            // FILTERS
             const matchesYear = yearValue === "" || year === yearValue;
             const matchesStatus = statusValue === "" || status === statusValue;
             const matchesType = typeValue === "" || type === typeValue;
 
-            // FINAL CHECK
             if (matchesSearch && matchesYear && matchesStatus && matchesType) {
                 row.style.display = "";
             } else {
@@ -286,13 +268,11 @@ while ($row = mysqli_fetch_assoc($result)) {
         });
     }
 
-    // EVENTS
     searchInput.addEventListener("keyup", filterTable);
     filterYear.addEventListener("change", filterTable);
     filterStatus.addEventListener("change", filterTable);
     filterType.addEventListener("change", filterTable);
 
-    // RESET / REFRESH BUTTON
     resetBtn.addEventListener("click", () => {
         searchInput.value = "";
         filterYear.value = "";
@@ -302,14 +282,17 @@ while ($row = mysqli_fetch_assoc($result)) {
         const rows = document.querySelectorAll("#userTable tr");
         rows.forEach(row => row.style.display = "");
 
-        // optional: close filter panel
         filterPanel.style.display = "none";
     });
 
-    // TOGGLE FILTER PANEL
     filterToggle.addEventListener("click", () => {
-        filterPanel.style.display =
-            filterPanel.style.display === "block" ? "none" : "block";
+        searchInput.value = "";
+        filterYear.value = "";
+        filterStatus.value = "";
+        filterType.value = "";
+
+        filterTable();
+        filterPanel.style.display = "block";
     });
     </script>
 </html>

@@ -1,7 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // =========================
-    // COMMON FILTER ELEMENTS
-    // =========================
     const searchInput = document.getElementById("searchInput");
     const filterToggle = document.getElementById("filterToggle");
     const filterPanel = document.getElementById("filterPanel");
@@ -15,9 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageTable = document.querySelector(".student-table[data-page]");
     const pageType = pageTable ? pageTable.getAttribute("data-page") : null;
 
-    // =========================
-    // TABLE BODY DETECTION
-    // =========================
     let tableBody = null;
 
     if (pageType === "assignment") {
@@ -26,48 +20,45 @@ document.addEventListener("DOMContentLoaded", () => {
         tableBody = document.getElementById("attendanceTable");
     }
 
-    // =========================
-    // TOGGLE FILTER PANEL
-    // =========================
     if (filterToggle && filterPanel) {
         filterToggle.addEventListener("click", () => {
-            if (filterPanel.style.display === "block") {
-                filterPanel.style.display = "none";
-                filterToggle.innerHTML = '<i class="fa-solid fa-filter"></i>';
-                resetFilters();
-            } else {
+            const isOpen = filterPanel.style.display === "block";
+            const hasFilters = (
+                (searchInput && searchInput.value.trim() !== "") ||
+                (filterYear && filterYear.value.trim() !== "") ||
+                (filterSection && filterSection.value.trim() !== "") ||
+                (filterSubject && filterSubject.value.trim() !== "") ||
+                (filterDate && filterDate.value.trim() !== "") ||
+                (filterStatus && filterStatus.value.trim() !== "")
+            );
+
+            if (!isOpen) {
                 filterPanel.style.display = "block";
                 filterToggle.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
 
-                // Populate dropdowns when opened
                 populateYearOptions();
                 populateSectionOptions();
                 applyFilters();
+            } else if (hasFilters) {
+                resetFilters();
+            } else {
+                filterPanel.style.display = "none";
+                filterToggle.innerHTML = '<i class="fa-solid fa-filter"></i>';
             }
         });
     }
 
-    // =========================
-    // GET VISIBLE TABLE ROWS SOURCE
-    // =========================
     function getRows() {
         if (!tableBody) return [];
         return Array.from(tableBody.querySelectorAll("tr"));
     }
 
-    // =========================
-    // NORMALIZE DATE
-    // Converts table date text to YYYY-MM-DD
-    // =========================
     function normalizeDate(dateStr) {
         if (!dateStr) return "";
-
-        // If already YYYY-MM-DD
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr.trim())) {
             return dateStr.trim();
         }
 
-        // Try parsing other formats
         const parsed = new Date(dateStr);
         if (!isNaN(parsed.getTime())) {
             const y = parsed.getFullYear();
@@ -78,11 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         return dateStr.trim();
     }
-
-    // =========================
-    // POPULATE YEAR OPTIONS
-    // Subject-based auto filter like instructor_assignment
-    // =========================
     function populateYearOptions() {
         if (!filterYear || !tableBody) return;
 
@@ -125,11 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
             filterYear.value = "";
         }
     }
-
-    // =========================
-    // POPULATE SECTION OPTIONS
-    // Based on Subject + Year
-    // =========================
     function populateSectionOptions() {
         if (!filterSection || !tableBody) return;
 
@@ -179,11 +160,6 @@ document.addEventListener("DOMContentLoaded", () => {
             filterSection.value = "";
         }
     }
-
-    // =========================
-    // APPLY FILTERS
-    // Works for BOTH pages
-    // =========================
     function applyFilters() {
         if (!tableBody) return;
 
@@ -237,7 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 matchesSection = sectionVal === "" || section === sectionVal;
                 matchesSubject = subjectVal === "" || subject === subjectVal;
 
-                // FIXED DATE FILTER
                 matchesDate = dateVal === "" || normalizeDate(date) === dateVal;
 
                 matchesStatus = statusVal === "" || status === statusVal;
@@ -253,10 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ) ? "" : "none";
         });
     }
-
-    // =========================
-    // RESET FILTERS
-    // =========================
     function resetFilters() {
         if (searchInput) searchInput.value = "";
         if (filterYear) filterYear.value = "";
@@ -272,17 +243,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         applyFilters();
     }
-
-    // =========================
-    // EVENT LISTENERS FOR FILTERS
-    // =========================
     if (searchInput) {
         searchInput.addEventListener("input", applyFilters);
     }
 
     if (filterSubject) {
         filterSubject.addEventListener("change", () => {
-            // Subject selected -> auto update Year + Section
             populateYearOptions();
             populateSectionOptions();
             applyFilters();
@@ -291,7 +257,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (filterYear) {
         filterYear.addEventListener("change", () => {
-            // Year selected -> auto update Section
             populateSectionOptions();
             applyFilters();
         });
@@ -308,10 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (filterStatus) {
         filterStatus.addEventListener("change", applyFilters);
     }
-
-    // =========================
-    // INITIAL LOAD
-    // =========================
     if (pageType === "assignment") {
         populateYearOptions();
         populateSectionOptions();
@@ -319,10 +280,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (pageType === "attendance") {
         applyFilters();
     }
-
-    // =========================
-    // DELETE (assignment page only)
-    // =========================
     document.querySelectorAll(".delete-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const row = btn.closest("tr");
@@ -338,8 +295,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(res => {
                     if (res.trim() === "success") {
                         row.remove();
-
-                        // refresh dropdowns after delete
                         populateYearOptions();
                         populateSectionOptions();
                         applyFilters();
@@ -354,9 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // =========================
-    // EDIT (assignment page only)
-    // =========================
     document.querySelectorAll(".edit-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const row = btn.closest("tr");
@@ -382,8 +334,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (subjectInput) subjectInput.value = subjectValue;
 
             if (room) room.value = row.cells[4]?.textContent.trim() || "";
-
-            // Time column format: 8:00 AM - 10:00 AM
             const timeText = row.cells[5]?.textContent.trim() || "";
             const timeRange = timeText.split(" - ");
 

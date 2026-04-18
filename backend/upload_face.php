@@ -30,8 +30,6 @@ $section = $data['section'];
 $new_descriptor = $data['descriptor'];
 
 
-// CHECK DUPLICATE STUDENT ID
-
 $checkID = $conn->prepare("SELECT id FROM students WHERE student_id = ?");
 $checkID->bind_param("s", $student_id);
 $checkID->execute();
@@ -46,8 +44,6 @@ if($resultID->num_rows > 0){
 
     exit;
 }
-
-// CHECK DUPLICATE FACE
 
 function faceDistance($a,$b){
 
@@ -82,7 +78,6 @@ while($row = $result->fetch_assoc()){
 
 }
 
-// INSERT NEW STUDENT
 
 $descriptor = json_encode($new_descriptor);
 

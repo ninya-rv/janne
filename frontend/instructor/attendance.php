@@ -2,22 +2,15 @@
 session_start();
 include "../../backend/db.php";
 
-// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../sign_in.html");
     exit;
 }
-
-// Redirect if not instructor
 if ($_SESSION['role'] !== 'instructor') {
     header("Location: ../admin/dashboard.php");
     exit;
 }
-
-// Logged-in instructor
 $instructor_id = $_SESSION['user_id'];
-
-// Get instructor info
 $instructorQuery = "SELECT name, email FROM users WHERE id = '$instructor_id' AND role = 'instructor' LIMIT 1";
 $instructorResult = mysqli_query($conn, $instructorQuery);
 
@@ -39,8 +32,6 @@ if ($instructorResult && mysqli_num_rows($instructorResult) > 0) {
 }
 
 $instructor_name = $instructorName;
-
-// ONLY SUBJECTS ASSIGNED TO THIS INSTRUCTOR
 $subjectQuery = "SELECT DISTINCT subject 
                  FROM instructor_assignment 
                  WHERE instructor_name = '$instructor_name'
@@ -54,7 +45,6 @@ if ($subjectResult && mysqli_num_rows($subjectResult) > 0) {
     }
 }
 
-// Get attendance records only for this instructor
 $attendanceQuery = "SELECT * FROM attendance 
                     WHERE instructor_name='$instructor_name'
                     ORDER BY date DESC, time_in DESC";
@@ -66,7 +56,6 @@ while ($row = mysqli_fetch_assoc($attendanceResult)) {
     $attendanceList[] = $row;
 }
 
-// Card counts
 $present = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Present'));
 $absent  = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Absent'));
 $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late'));
@@ -81,8 +70,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-
-<!-- Header -->
 <header class="header">
     <div class="logo-title">
         <img src="/css/EVSU_Official_Logo.png" alt="EVSU Logo">
@@ -111,8 +98,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
 </header>
 
 <div class="container">
-
-<!-- Sidebar -->
 <div class="sidebar">
     <ul>
         <li>
@@ -135,12 +120,8 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
         </li>
     </ul>
 </div>
-
-<!-- Main Content -->
 <div class="main">
     <h3>Attendance</h3>
-
-    <!-- Cards -->
     <div class="cards">
         <div class="card">
             <h4>Present</h4>
@@ -166,12 +147,9 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
             ?></p>
         </div>
     </div>
-
-    <!-- Student Section -->
     <div class="student-section">
         <h4>Student Attendance</h4>
         <br>
-
         <div class="search-filter">
             <input type="text" id="searchInput" placeholder="Search students...">
 
@@ -179,8 +157,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
                 <i class="fa-solid fa-filter"></i>
             </button>
         </div>
-
-        <!-- FILTER PANEL -->
         <div class="filter-panel" id="filterPanel">
             <div class="filter-grid">
                  <div class="filter-group">
@@ -275,7 +251,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
     </div>
 </div>
 </div>
-
 <script src="/backend/script.js"></script>
 <script>
     const profileBtn = document.getElementById("profileBtn");
@@ -285,8 +260,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
         dropdown.style.display =
             dropdown.style.display === "block" ? "none" : "block";
     });
-
-    // close when clicking outside
     document.addEventListener("click", function(e) {
         if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
             dropdown.style.display = "none";

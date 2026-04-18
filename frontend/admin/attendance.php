@@ -2,7 +2,6 @@
 session_start();
 include "../../backend/db.php";
 
-// check if admin
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../sign_in.html");
     exit;
@@ -16,7 +15,6 @@ while ($row = mysqli_fetch_assoc($attendanceResult)) {
     $attendanceList[] = $row;
 }
 
-// counts
 $present = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Present'));
 $absent  = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Absent'));
 $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late'));
@@ -32,7 +30,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
     
     <div class="logo-title">
@@ -45,7 +42,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
 
     <div class="container">
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <ul>
              <li>
@@ -77,7 +73,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="main">
         <h3>Attendance</h3>
 
@@ -101,7 +96,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
             
         </div>
 
-        <!-- Student Section -->
         <div class="student-section">
             <h4>Student Attendance</h4>
             <br>
@@ -114,7 +108,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
                 </button>
             </div>
 
-            <!-- FILTER PANEL (Placed BELOW search-filter) -->
             <div class="filter-panel" id="filterPanel">
                 <div class="filter-grid">
                     <div class="filter-group">
@@ -194,7 +187,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
     const table = document.getElementById("attendanceTable");
     const rows = table.getElementsByTagName("tr");
 
-    // 🔍 SEARCH + FILTER FUNCTION
     function filterTable() {
         const searchValue = searchInput.value.toLowerCase();
         const yearValue = filterYear.value.toLowerCase();
@@ -229,8 +221,6 @@ $late    = count(array_filter($attendanceList, fn($a) => $a['status'] == 'Late')
             }
         }
     }
-
-    // 🔁 EVENTS
     searchInput.addEventListener("keyup", filterTable);
     filterYear.addEventListener("change", filterTable);
     filterDate.addEventListener("change", filterTable);

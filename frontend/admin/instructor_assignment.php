@@ -15,7 +15,6 @@ include "../../backend/db.php";
 
 <body>
 
-<!-- Header -->
 <div class="header">
     <div class="logo-title">
         <img src="../../css/EVSU_Official_Logo.png" alt="EVSU logo">
@@ -25,8 +24,6 @@ include "../../backend/db.php";
 </div>
 
 <div class="container">
-
-    <!-- Sidebar -->
     <div class="sidebar">
         <ul>
             <li><a href="../../frontend/admin/dashboard.php" class="active"><i class="fa-solid fa-gauge"></i><span>Dashboard</span></a></li>
@@ -36,30 +33,29 @@ include "../../backend/db.php";
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="main">
 
         <h3>Instructor Year and Section Assignments</h3>
 
-        <!-- Search + Filter -->
         <div class="search-filter">
             <input type="text" id="searchInput" placeholder="Search instructor...">
             <button class="filter-btn" id="filterToggle">
                 <i class="fa-solid fa-filter"></i>
             </button>       
 	 </div>
-
-        <!-- Filter Panel -->
         <div class="filter-panel" id="filterPanel" style="display:none;">
             <div class="filter-grid">
                 <div class="filter-group">
                     <label>Year</label>
                     <select id="filterYear">
                         <option value="">All</option>
-                        <option>1st Year</option>
-                        <option>2nd Year</option>
-                        <option>3rd Year</option>
-                        <option>4th Year</option>
+                        <?php
+                        $yearQuery = "SELECT DISTINCT year_level FROM instructor_assignment ORDER BY year_level ASC";
+                        $yearResult = mysqli_query($conn, $yearQuery);
+                        while($yearRow = mysqli_fetch_assoc($yearResult)){
+                            echo '<option value="'.$yearRow['year_level'].'">'.$yearRow['year_level'].'</option>';
+                        }
+                        ?>
                     </select>
                 </div>
 
@@ -67,10 +63,13 @@ include "../../backend/db.php";
                     <label>Section</label>
                     <select id="filterSection">
                         <option value="">All</option>
-                        <option>A</option>
-                        <option>B</option>
-                        <option>C</option>
-                        <option>D</option>
+                        <?php
+                        $sectionQuery = "SELECT DISTINCT section FROM instructor_assignment ORDER BY section ASC";
+                        $sectionResult = mysqli_query($conn, $sectionQuery);
+                        while($sectionRow = mysqli_fetch_assoc($sectionResult)){
+                            echo '<option value="'.$sectionRow['section'].'">'.$sectionRow['section'].'</option>';
+                        }
+                        ?>
                     </select>
                 </div>
 
@@ -78,18 +77,21 @@ include "../../backend/db.php";
                     <label>Subject</label>
                     <select id="filterSubject">
                         <option value="">All</option>
-                        <!-- Add same subjects as JS if needed -->
+                        <?php
+                        $subjectQuery = "SELECT DISTINCT subject FROM instructor_assignment ORDER BY subject ASC";
+                        $subjectResult = mysqli_query($conn, $subjectQuery);
+                        while($subjectRow = mysqli_fetch_assoc($subjectResult)){
+                            echo '<option value="'.$subjectRow['subject'].'">'.$subjectRow['subject'].'</option>';
+                        }
+                        ?>
                     </select>
                 </div>
             </div>
         </div>
-
-        <!-- Assignment Form -->
         <div class="student-section">
             <form action="../../backend/assign_instructor.php" method="POST" class="assignment-form" id="assignForm">
                 <input type="hidden" name="edit_id" id="edit_id">
                 <div class="form-row">
-                    <!-- Instructor -->
                     <select name="instructor_name" id="instructor_name" required>
                         <option value="">Select Instructor</option>
                         <?php
@@ -100,31 +102,23 @@ include "../../backend/db.php";
                         }
                         ?>
                     </select>
-
-                    <!-- Year -->
                     <select name="year_level" id="year_level" required>
                         <option value="1st Year">1st Year</option>
                         <option value="2nd Year">2nd Year</option>
                         <option value="3rd Year">3rd Year</option>
                         <option value="4th Year">4th Year</option>
                     </select>
-
-                    <!-- Section -->
                     <select name="section" id="section" required>
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="C">C</option>
                         <option value="D">D</option>
                     </select>
-
-                    <!-- Subject search + dropdown -->
                     <div class="subject-search-container">
                         <input type="text" id="subjectInput" placeholder="Search Subject Code or Name" autocomplete="off">
                         <input type="hidden" name="subject" id="subject">
                         <div class="subject-dropdown" id="subjectDropdown"></div>
                     </div>
-
-                    <!-- Room -->
                     <select name="room" id="room" required>
                         <option value="">Select Room</option>
                         <option value="Room 1">Room 1</option>
@@ -148,9 +142,7 @@ include "../../backend/db.php";
                     <button type="submit" name="assign" class="assign-btn">Assign</button>
                 </div>
             </form>
-
-            <!-- Table -->
-            <table class="student-table">
+            <table class="student-table" data-page="assignment">
                 <thead>
                     <tr>
                         <th>Instructor Name</th>
@@ -189,15 +181,10 @@ include "../../backend/db.php";
                 </tbody>
             </table>
         </div>
-
     </div>
-
 </div>
-
-<!-- JS -->
 <script src="../../backend/script.js"></script>
 <script>
-// ================= Subject Dropdown & Search =================
     document.addEventListener("DOMContentLoaded", () => {
 
     const subjects = [
@@ -266,16 +253,13 @@ include "../../backend/db.php";
         }
     });
 
-    // EDIT buttons
     document.querySelectorAll(".edit-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const row = btn.closest("tr");
             const subjectValue = row.cells[3].textContent;
 
-            loadSubjects(); // ensure option exists
+            loadSubjects();
             subjectSelect.value = subjectValue;
-
-            // populate other fields
             document.getElementById("edit_id").value = row.getAttribute("data-id");
             document.getElementById("instructor_name").value = row.cells[0].textContent;
             document.getElementById("year_level").value = row.cells[1].textContent;
@@ -302,6 +286,5 @@ include "../../backend/db.php";
     }
 });
 </script>
-
 </body>
 </html>

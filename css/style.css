@@ -256,9 +256,14 @@ body {
     background: #8B0000;
     color: white;
     border: none;
-    padding: 10px 14px;
-    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: 0.3s ease;
 }
 

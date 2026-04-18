@@ -2,13 +2,12 @@
 session_start();
 include "../../backend/db.php";
 
-// Redirect if not logged in
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../sign_in.html");
     exit;
 }
 
-// Redirect if not instructor
 if ($_SESSION['role'] !== 'instructor') {
     header("Location: ../admin/dashboard.php");
     exit;
@@ -16,7 +15,7 @@ if ($_SESSION['role'] !== 'instructor') {
 
 $instructor_id = $_SESSION['user_id'];
 
-// Get logged-in instructor details
+
 $instructorQuery = "SELECT name, email FROM users WHERE id = '$instructor_id' AND role = 'instructor' LIMIT 1";
 $instructorResult = mysqli_query($conn, $instructorQuery);
 
@@ -25,7 +24,6 @@ if ($instructorResult && mysqli_num_rows($instructorResult) > 0) {
     $instructorName = $instructorData['name'];
     $instructorEmail = $instructorData['email'];
 
-    // Create initials
     $nameParts = explode(" ", trim($instructorName));
     $initials = "";
     foreach ($nameParts as $part) {
@@ -38,10 +36,9 @@ if ($instructorResult && mysqli_num_rows($instructorResult) > 0) {
     $initials = "IN";
 }
 
-// Use instructor name for class assignments
 $instructor_name = $instructorName;
 
-// Get all assignments for this instructor
+
 $classQuery = "SELECT * FROM instructor_assignment 
                WHERE instructor_name = '$instructor_name'
                ORDER BY start_time ASC";
@@ -57,43 +54,165 @@ $classResult = mysqli_query($conn, $classQuery);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/css/style.css">
 
-    <!-- Load Face API -->
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script defer src="/api/instructorScanner.js"></script>
 
     <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background-color: #f3f3f3;
+            overflow: hidden;
+        }
+
         #video {
-            width: 400px;
-            height: 300px;
-            border: 2px solid #8B0000;
-            border-radius: 8px;
+            width: 720px;
+            max-width: 100%;
+            height: 520px;
+            border: 3px solid #8B0000;
+            border-radius: 16px;
             background: #000;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        #status,
+        #warning {
+            width: 100%;
+            text-align: center;
+            margin-top: 12px;
+            font-weight: bold;
         }
 
         #status {
-            margin-top: 10px;
-            font-weight: bold;
             color: #8B0000;
+        }
+
+        .warning-text {
+            display: none;
+            color: #B00000;
+            margin-top: 10px;
+            padding: 12px 14px;
+            border: 1px solid rgba(176, 0, 0, 0.28);
+            border-radius: 12px;
+            background: rgba(255, 220, 220, 0.88);
         }
 
         #classSelect {
             padding: 10px;
             width: 100%;
-            max-width: 700px;
+            max-width: 520px;
             margin-bottom: 15px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid #ccc;
         }
 
         #scannerArea {
             display: none;
-            margin-top: 20px;
+            margin-top: 24px;
+            width: 100%;
+            max-width: 940px;
+            margin-left: auto;
+            margin-right: auto;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .student-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            position: sticky;
+            top: 110px;
+            width: 100%;
+            max-width: 860px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+            z-index: 2;
+        }
+
+        .step-indicator {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 98px;
+            padding: 8px 0;
+            border-radius: 14px;
+        }
+
+        .step-number {
+            width: 34px;
+            height: 34px;
+            border-radius: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            background: #ddd;
+            color: #333;
+        }
+
+        .step.active .step-number {
+            background: #8B0000;
+            color: #fff;
+        }
+
+        .step-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .time-mode-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .scanner-mode-btn {
+            flex: 1;
+            min-width: 118px;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 12px;
+            background: #8B0000;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .scanner-mode-btn:hover {
+            transform: translateY(-1px);
+            background: #a30000;
+        }
+
+        .scanner-mode-btn.active {
+            background: #4d0003;
         }
     </style>
 </head>
 <body>
-
-<!-- Header -->
 <header class="header">
     <div class="logo-title">
         <img src="/css/EVSU_Official_Logo.png" alt="EVSU Logo">
@@ -123,7 +242,6 @@ $classResult = mysqli_query($conn, $classQuery);
 
 <div class="container">
 
-    <!-- Sidebar -->
     <aside class="sidebar">
         <ul>
             <li>
@@ -146,14 +264,26 @@ $classResult = mysqli_query($conn, $classQuery);
             </li>
         </ul>
     </aside>
-
-    <!-- Main Content -->
     <main class="main">
         <h3>Face Scanner</h3>
 
         <div class="student-section">
-            <h4>Select Class Assignment</h4>
-            <br>
+            <h4>Face Scanner</h4>
+            <div class="step-indicator">
+                <div class="step active" id="step1Indicator">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Select mode</div>
+                </div>
+                <div class="step" id="step2Indicator">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Choose class</div>
+                </div>
+            </div>
+
+            <div class="time-mode-row">
+                <button id="timeInBtn" class="scanner-mode-btn" type="button">Time In</button>
+                <button id="timeOutBtn" class="scanner-mode-btn" type="button">Time Out</button>
+            </div>
 
             <select id="classSelect" required disabled>
                 <option value="">Select your class assignment</option>
@@ -182,139 +312,13 @@ $classResult = mysqli_query($conn, $classQuery);
                 <?php endif; ?>
             </select>
 
-            <button id="startScannerBtn" class="assign-btn" type="button" disabled>Open Scanner</button>
-            <div style="margin-bottom: 10px;">
-                <button id="timeInBtn">Time In</button>
-                <button id="timeOutBtn">Time Out</button>
-            </div>
             <div id="scannerArea">
                 <video id="video" autoplay muted></video>
                 <div id="status">Scanner ready...</div>
+                <div id="warning" class="warning-text"></div>
             </div>
         </div>
     </main>
 </div>
-
-<script>
-let selectedClass = null;
-let scanMode = null;
-
-// =========================
-// DISABLE CLASS FIRST
-// =========================
-const classSelect = document.getElementById("classSelect");
-const startBtn = document.getElementById("startScannerBtn");
-
-classSelect.disabled = true;
-startBtn.disabled = true;
-
-// =========================
-// TIME BUTTONS FIRST
-// =========================
-document.getElementById("timeInBtn").addEventListener("click", () => {
-    scanMode = "time_in";
-    document.getElementById("status").innerText = "Mode: Time In selected";
-
-    classSelect.disabled = false;
-});
-
-document.getElementById("timeOutBtn").addEventListener("click", () => {
-    scanMode = "time_out";
-    document.getElementById("status").innerText = "Mode: Time Out selected";
-
-    classSelect.disabled = false;
-});
-
-// =========================
-// PH TIME FUNCTION
-// =========================
-function getPHTime() {
-    const now = new Date();
-    return new Date(now.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-}
-
-// =========================
-// BLOCK PAST CLASS
-// =========================
-classSelect.addEventListener("change", () => {
-    const option = classSelect.options[classSelect.selectedIndex];
-
-    if (!option.value) return;
-
-    const phNow = getPHTime();
-
-    const endTime = option.dataset.end; // HH:MM:SS
-    const today = phNow.toISOString().split("T")[0];
-
-    const classEnd = new Date(`${today}T${endTime}`);
-
-    if (phNow > classEnd) {
-        alert("❌ This class already ended. You cannot select it.");
-        classSelect.value = "";
-        startBtn.disabled = true;
-        return;
-    }
-
-    if (scanMode) {
-        startBtn.disabled = false;
-    }
-});
-
-// =========================
-// START SCANNER
-// =========================
-document.getElementById("startScannerBtn").addEventListener("click", function () {
-    if (!scanMode) {
-        alert("Please select Time In or Time Out first.");
-        return;
-    }
-
-    const select = document.getElementById("classSelect");
-    const option = select.options[select.selectedIndex];
-
-    if (!select.value || option.text === "No class assignments found") {
-        alert("Please select your class first.");
-        return;
-    }
-
-    selectedClass = {
-        assignment_id: select.value,
-        year_level: option.dataset.year,
-        section: option.dataset.section,
-        subject: option.dataset.subject,
-        start_time: option.dataset.start,
-        end_time: option.dataset.end,
-        mode: () => scanMode
-    };
-
-    document.getElementById("scannerArea").style.display = "block";
-    document.getElementById("status").innerText =
-        "Scanner ready (" + scanMode.replace("_", " ") + ") - " + selectedClass.subject;
-
-    if (typeof setSelectedClass === "function") {
-        setSelectedClass(selectedClass);
-    } else {
-        console.error("setSelectedClass() is not found.");
-    }
-});
-
-// =========================
-// PROFILE DROPDOWN
-// =========================
-const profileBtn = document.getElementById("profileBtn");
-const dropdown = document.getElementById("profileDropdown");
-
-profileBtn.addEventListener("click", () => {
-    dropdown.style.display =
-        dropdown.style.display === "block" ? "none" : "block";
-});
-
-document.addEventListener("click", function (e) {
-    if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.style.display = "none";
-    }
-});
-</script>
-
 </body>
 </html>

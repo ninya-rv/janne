@@ -1,18 +1,15 @@
 <?php
 include "../../backend/db.php";
-    // Get total users
     $totalUsersQuery = "SELECT COUNT(*) as total FROM users";
     $totalResult = mysqli_query($conn, $totalUsersQuery);
     $totalRow = mysqli_fetch_assoc($totalResult);
     $totalUsers = $totalRow['total'];
 
-    // Get active users
     $activeUsersQuery = "SELECT COUNT(*) as active FROM users WHERE status='active'";
     $activeResult = mysqli_query($conn, $activeUsersQuery);
     $activeRow = mysqli_fetch_assoc($activeResult);
     $activeUsers = $activeRow['active'];
 
-    // Get inactive users
     $inactiveUsersQuery = "SELECT COUNT(*) as inactive FROM users WHERE status='inactive'";
     $inactiveResult = mysqli_query($conn, $inactiveUsersQuery);
     $inactiveRow = mysqli_fetch_assoc($inactiveResult);
@@ -28,8 +25,6 @@ include "../../backend/db.php";
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-
-<!-- Header -->
 <div class="header">
     
     <div class="logo-title">
@@ -41,8 +36,6 @@ include "../../backend/db.php";
 </div>
 
 <div class="container">
-
-     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
             <li>
@@ -73,8 +66,6 @@ include "../../backend/db.php";
             </li>
         </ul>
     </div>
-
-    <!-- Main Content -->
     <div class="main">
         <h3>Users</h3>
         <div class="cards">
@@ -91,11 +82,9 @@ include "../../backend/db.php";
                 <p><?php echo $inactiveUsers; ?></p>
             </div>
         </div>
-        <!-- Search-->
         <div class="search-filter">
             <input type="text" id="searchInput" placeholder="Search instructor...">
-        </div>
-            
+        </div>  
         <div class="student-section">
             <form action="../../backend/add_user.php" method="POST" class="assignment-form" id="addUserForm">
                 <div class="form-row">
@@ -111,7 +100,6 @@ include "../../backend/db.php";
                     <button type="submit" name="add_user" class="assign-btn">Add User</button>
                 </div>
             </form>
-
             <table class="student-table">
                 <thead>
                     <tr>
@@ -161,13 +149,9 @@ include "../../backend/db.php";
                                 <a href="../../backend/update_status.php?id=<?php echo $row['id']; ?>&status=active" title="Set Active">
                                     <i class="fa-solid fa-user-check action-icon"></i>
                                 </a>
-
                             <?php } ?>
-
                         </td>
-
                     </tr>
-
                 <?php } ?>
                 </tbody>
             </table>
@@ -175,7 +159,6 @@ include "../../backend/db.php";
     </div>
 </div>
 </body>
-    <!-- JS -->
     <script>
         const searchInput = document.getElementById("searchInput");
         const rows = document.querySelectorAll("#instructorTable tr");
@@ -194,9 +177,7 @@ include "../../backend/db.php";
                 } else {
                     row.style.display = "none";
                 }
-
             });
-
         });
     </script>
 </html>

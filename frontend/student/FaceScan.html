@@ -5,7 +5,6 @@
 <title>Student Registration - Face Capture</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<!-- Face-api.js -->
 <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <script defer src="/api/faceid.js"></script>
 
@@ -32,8 +31,6 @@
     z-index: -1;
     transform: scale(1.02);
   }
-
-  /* MAIN CONTAINER */
   .container {
     position: relative;
     z-index: 1;
@@ -266,22 +263,43 @@
   button.secondary:hover {
     background: #999;
   }
+
+  #termsModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 10px;
+  }
+
+  #termsModal .modal-content {
+    background: white;
+    width: 500px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  }
+
+  #termsModal .modal-content button {
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
 
 <div class="container">
-
-  <!-- LEFT SIDE IMAGE -->
   <div class="left">
     <img src="/css/face-recognition.png" alt="Profile Icon" class="profile-icon" />
   </div>
-
-  <!-- RIGHT SIDE FORM -->
   <div class="right">
     <h2>REGISTER</h2>
 
-    <!-- STEP INDICATOR -->
     <div class="step-indicator">
       <div class="step active" id="step1-indicator">
         <div class="step-number">1</div>
@@ -294,8 +312,6 @@
     </div>
 
     <form id="registrationForm">
-
-      <!-- STEP 1: INFORMATION INPUT -->
       <div class="step-content active" id="step1-content">
         <div class="form-section">
           <label>Student ID</label>
@@ -329,7 +345,7 @@
             <input type="checkbox" id="agree_terms" />
             <span>
               I agree to the
-              <a href="#" onclick="showTerms()">Terms & Conditions</a>
+              <a href="#" onclick="showTerms(); return false;">Terms & Conditions</a>
               for facial data collection and privacy protection.
             </span>
           </div>
@@ -341,8 +357,6 @@
           <div id="warning"></div>
         </div>
       </div>
-
-      <!-- STEP 2: FACE SCAN AND REGISTRATION -->
       <div class="step-content" id="step2-content">
         <div class="form-section">
           <p style="color: #666; margin-bottom: 20px; text-align: center;">Position your face in the video and click Register</p>
@@ -362,9 +376,8 @@
   </div>
 </div>
 
-<!-- TERMS MODAL -->
-<div id="termsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6);">
-  <div style="background: white; width: 500px; max-width: 90%; margin: 100px auto; padding: 20px; border-radius: 10px;">
+<div id="termsModal">
+  <div class="modal-content">
     <h3 style="color: #8B0000">Terms and Conditions – Facial Data Registration</h3>
     <p>By registering your face in this system, you agree to the following:</p>
     <ul>
@@ -375,9 +388,24 @@
       <li>You may request removal of your data from the system.</li>
     </ul>
     <p>By continuing, you consent to the collection and use of your facial data.</p>
-    <button onclick="closeTerms()" style="margin-top: 10px">Close</button>
+    <button onclick="closeTerms()">Close</button>
   </div>
 </div>
 
+<script>
+  function showTerms() {
+    var modal = document.getElementById('termsModal');
+    if (modal) {
+      modal.style.display = 'flex';
+    }
+  }
+
+  function closeTerms() {
+    var modal = document.getElementById('termsModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  }
+</script>
 </body>
 </html>

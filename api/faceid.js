@@ -1,16 +1,13 @@
-// Check if running on localhost
 function isLocalhost() {
   return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
 
-// Display warning/alert only if not on localhost
 function showAlert(message) {
   if (!isLocalhost()) {
     alert(message);
   }
 }
 
-// Display warning in the warning div
 function showWarning(message) {
   const warningDiv = document.getElementById("warning");
   if (warningDiv && !isLocalhost()) {
@@ -24,7 +21,6 @@ const warningDiv = document.getElementById('warning');
 
 let modelsLoaded = false;
 
-// Load AI models
 async function loadModels() {
 
     if (modelsLoaded) return;
@@ -41,7 +37,6 @@ async function loadModels() {
 }
 
 
-// Start camera
 async function startCamera() {
 
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -57,7 +52,6 @@ async function startCamera() {
 }
 
 
-// Register student face
 async function registerFace() {
 
     warningDiv.innerText="";
@@ -162,8 +156,6 @@ async function registerFace() {
 }
 
 
-// TERMS & CONDITIONS MODAL FUNCTIONS
-
 function showTerms(){
     document.getElementById("termsModal").style.display="block";
 }
@@ -173,10 +165,7 @@ function closeTerms(){
 }
 
 
-// STEP NAVIGATION FUNCTIONS
-
 function nextStep() {
-    // Validate Step 1
     const studentId = document.getElementById("student_id").value.trim();
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
@@ -185,10 +174,8 @@ function nextStep() {
     const agreeTerms = document.getElementById("agree_terms").checked;
     const warningDiv = document.getElementById("warning");
 
-    // Clear previous warning
     warningDiv.innerHTML = "";
 
-    // Validation checks
     if (!studentId) {
       showWarning("Please enter Student ID");
       return;
@@ -214,24 +201,20 @@ function nextStep() {
       return;
     }
 
-    // Move to Step 2
     document.getElementById("step1-content").classList.remove("active");
     document.getElementById("step2-content").classList.add("active");
     document.getElementById("step1-indicator").classList.remove("active");
     document.getElementById("step2-indicator").classList.add("active");
 
-    // Start video stream for face detection
     startVideoStream();
 }
 
 function previousStep() {
-    // Move back to Step 1
     document.getElementById("step2-content").classList.remove("active");
     document.getElementById("step1-content").classList.add("active");
     document.getElementById("step2-indicator").classList.remove("active");
     document.getElementById("step1-indicator").classList.add("active");
 
-    // Stop video stream
     stopVideoStream();
 }
 
@@ -257,8 +240,6 @@ function stopVideoStream() {
     }
 }
 
-
-// CLEAR WARNING WHEN CHECKBOX IS CHECKED
 
 document.addEventListener("DOMContentLoaded", function() {
     const agreeTermsCheckbox = document.getElementById("agree_terms");
