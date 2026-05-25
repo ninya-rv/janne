@@ -10,10 +10,10 @@ _ _ _
 Requirements
 Make sure the following are installed on your system:
 - PHP 8.0 or newer
-- Composer
-- MySQL
+- Brevo
 - Git
-- XAMPP / WAMP (for local server)
+- Supabase
+- Railway
 
 ## Check your PHP version:
 
@@ -24,8 +24,8 @@ Check Composer:
 composer -v
 
 ## Clone the Repository
-git clone https://github.com/yourusername/your-repository-name.git
-cd your-repository-name
+git clone https:https://github.com/ninya-rv/evsuoc_facescnner
+cd ninya-rv/evsuoc_facescnner
 
 ## Create and Activate a Virtual Environment
 Option 1: Using php-virtualenv (Recommended for PHP)
@@ -66,13 +66,13 @@ Start CakePHP’s built-in server:
 bin/cake server
 
 You should see:
-Built-in server is running in http://localhost:8765/
+Built-in server is running in https://evsuoccfacescanner-production.up.railway.app/index.php
 Open your browser and go to:
-http://localhost:8080
+https://evsuoccfacescanner-production.up.railway.app/index.php
 
 ## Access the Admin Panel
 If the admin panel is enabled, visit:
-http://localhost:8080/Evsuadmin
+https://evsuoccfacescanner-production.up.railway.app/index.php
 Login using the administrator credentials created during setup.
 
 
